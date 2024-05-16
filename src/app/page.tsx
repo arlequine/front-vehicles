@@ -1,95 +1,81 @@
-import Image from "next/image";
+"use client"; // This is a client component 👈🏽
 import styles from "./page.module.css";
+import 'bootstrap/dist/css/bootstrap.min.css';
+import { useState, useEffect } from "react";
+import axios from "axios";
+import { Table,  } from 'react-bootstrap';
 
 export default function Home() {
+  
+  const [listVehicles, setListVehicles] = useState([])
+
+  const getVehicles = async () => {
+    const url = `http://localhost:3001/api/v1/vehicles`
+    const results = await axios.get(url)
+    console.log(results.data)
+    setListVehicles(results.data)
+  }
+
+  const handleClick = () => {
+   console.log('click')  
+  }
+
+  useEffect(() => {
+    getVehicles()
+  }, [])
+  
+
   return (
     <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>src/app/page.tsx</code>
-        </p>
+      <section className={styles.description}>
+      
         <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
-
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore starter templates for Next.js.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
           <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
+            By ArlequinDev
           </p>
-        </a>
-      </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>
+          Mapa
+        </h2>
+
+      </section>
+
+      <section className={styles.center}>
+        <h3>
+          Lista de vehiculos
+        </h3>
+        <div className={styles.vehiclesList} >
+        <Table striped bordered hover>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Marca</th>
+              <th>Modelo</th>
+              <th>Año</th>
+              <th>color</th>
+              <th>placa</th>
+            </tr>
+          </thead>
+          <tbody>
+            {
+              listVehicles.map((vehicle, i) => ((
+                <tr key={i} onClick={() => handleClick()}>
+                  <td>1</td>
+                  <td>{vehicle.brand}</td>
+                  <td>{vehicle.model}</td>
+                  <td>{vehicle.year}</td>
+                  <td>{vehicle.color}</td>
+                  <td>{vehicle.plate}</td>
+                </tr>
+              )))
+            }
+          </tbody>
+        </Table>
+        </div>
+      </section>
     </main>
   );
 }
