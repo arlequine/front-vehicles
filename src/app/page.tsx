@@ -1,29 +1,29 @@
 "use client"; // This is a client component 👈🏽
 import styles from "./page.module.css";
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { useState, useEffect } from "react";
-import axios from "axios";
 import { Table,  } from 'react-bootstrap';
+import useAxios from "@/hooks/useAxios";
+import 'leaflet/dist/leaflet.css'
+
+import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet'
+import { useEffect, useState } from "react";
+import MapView from "@/components/MapView/MapView";
+import axios, { AxiosResponse } from "axios";
+import { VehicleRoute } from "@/types";
 
 export default function Home() {
   
-  const [listVehicles, setListVehicles] = useState([])
+  const listVehicles = useAxios('vehicles')
+  const [geoRoute, setGeoRoutes] = useState<[VehicleRoute]>()
+  
 
-  const getVehicles = async () => {
-    const url = `http://localhost:3001/api/v1/vehicles`
+
+  const handleClick = async () => {
+    const url = `http://localhost:3001/api/v1/georoute`
     const results = await axios.get(url)
     console.log(results.data)
-    setListVehicles(results.data)
+    setGeoRoutes(results.data)
   }
-
-  const handleClick = () => {
-   console.log('click')  
-  }
-
-  useEffect(() => {
-    getVehicles()
-  }, [])
-  
 
   return (
     <main className={styles.main}>
@@ -40,6 +40,9 @@ export default function Home() {
         <h2>
           Mapa
         </h2>
+        {
+          geoRoute && <MapView geojsonData={geoRoute[0]} />
+        }
 
       </section>
 
