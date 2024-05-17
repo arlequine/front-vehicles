@@ -1,29 +1,40 @@
 "use client"; // This is a client component 👈🏽
 import styles from "./page.module.css";
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Table,  } from 'react-bootstrap';
+import { Form, Table,  } from 'react-bootstrap';
 import useAxios from "@/hooks/useAxios";
 import 'leaflet/dist/leaflet.css'
-
-import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet'
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import MapView from "@/components/MapView/MapView";
 import axios, { AxiosResponse } from "axios";
+import { VehiclesContext } from '../context/VehiclesContext'
 import { VehicleRoute } from "@/types";
 
 export default function Home() {
+
+  let { vehicles, 
+    getVehicles, 
+    getVehicleFilter } = useContext(VehiclesContext)
   
   const listVehicles = useAxios('vehicles')
   const [geoRoute, setGeoRoutes] = useState<[VehicleRoute]>()
   
-
-
   const handleClick = async () => {
     const url = `http://localhost:3001/api/v1/georoute`
     const results = await axios.get(url)
     console.log(results.data)
     setGeoRoutes(results.data)
   }
+
+  const handleChange = (e) => {
+    getVehicleFilter(e.target.value)
+  }
+
+
+  useEffect(() => {
+    getVehicles()
+  }, [])
+  
 
   return (
     <main className={styles.main}>
@@ -51,6 +62,12 @@ export default function Home() {
           Lista de vehiculos
         </h3>
         <div className={styles.vehiclesList} >
+        <Form.Control
+          type="text"
+          placeholder="Disabled readonly input"
+          aria-label="filter vehicles"
+          onChange={(e) => handleChange(e)}
+        />
         <Table striped bordered hover>
           <thead>
             <tr>
@@ -64,7 +81,7 @@ export default function Home() {
           </thead>
           <tbody>
             {
-              listVehicles.map((vehicle, i) => ((
+              vehicles && vehicles.map((vehicle, i: number) => ((
                 <tr key={i} onClick={() => handleClick()}>
                   <td>1</td>
                   <td>{vehicle.brand}</td>

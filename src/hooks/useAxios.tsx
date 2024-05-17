@@ -14,6 +14,14 @@ const useAxios: React.FC<string> = () => {
         console.log(results.data)
         setListVehicles(results.data)
     }
+
+    const getVehicleFilter = async (brand: string) => {
+      const url = `http://localhost:3001/api/v1/vehicles/brand${brand}`
+      const results = await axios.get(url)
+      console.log(results.data)
+      setListVehicles(results.data)
+    }
+    
     useEffect(() => {
       getVehicles()
     }, [])
