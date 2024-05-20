@@ -14,7 +14,21 @@ type Features = [
 
 type Coords = [String]
 
+type Vehicle = {
+    plate: string,
+    economicNumber: string,
+    vim: string,
+    seating: number,
+    carInsurance: string,
+    carInsuranceNumber: string,
+    brand: string,
+    model: string,
+    year: string,
+    color: string
+}
+
 
 export type {
-    VehicleRoute
+    VehicleRoute,
+    Vehicle
 }

@@ -1,23 +1,22 @@
 "use client"; // This is a client component 👈🏽
 import styles from "./page.module.css";
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Form, Table,  } from 'react-bootstrap';
+import { Button, Form, Table,  } from 'react-bootstrap';
 import useAxios from "@/hooks/useAxios";
 import 'leaflet/dist/leaflet.css'
-import { useContext, useEffect, useState } from "react";
+import { ChangeEvent, useContext, useEffect, useState } from "react";
 import MapView from "@/components/MapView/MapView";
 import axios, { AxiosResponse } from "axios";
-import { VehiclesContext } from '../context/VehiclesContext'
-import { VehicleRoute } from "@/types";
+import { VehiclesContext } from '@/context/VehiclesContext'
+import { Vehicle, VehicleRoute } from "@/types";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
 
-  let { vehicles, 
-    getVehicles, 
-    getVehicleFilter } = useContext(VehiclesContext)
+  let { vehicles, getVehicleFilter, deleteVehicle } = useContext(VehiclesContext)
   
-  const listVehicles = useAxios('vehicles')
   const [geoRoute, setGeoRoutes] = useState<[VehicleRoute]>()
+  const router = useRouter()
   
   const handleClick = async () => {
     const url = `http://localhost:3001/api/v1/georoute`
@@ -26,13 +25,17 @@ export default function Home() {
     setGeoRoutes(results.data)
   }
 
-  const handleChange = (e) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     getVehicleFilter(e.target.value)
   }
 
+  const handleDelete = async (id: string) => {
+    deleteVehicle(id)
+    await getVehicleFilter('')
+  }
 
   useEffect(() => {
-    getVehicles()
+    getVehicleFilter()
   }, [])
   
 
@@ -44,6 +47,11 @@ export default function Home() {
           <p>
             By ArlequinDev
           </p>
+        </div>
+        <div>
+          <Button type="button" variant="outlined" onClick={() => router.push('/vehicle')}>
+            Nuevo vehiculo
+          </Button>
         </div>
       </section>
 
@@ -64,7 +72,7 @@ export default function Home() {
         <div className={styles.vehiclesList} >
         <Form.Control
           type="text"
-          placeholder="Disabled readonly input"
+          placeholder="Busqueda por marca"
           aria-label="filter vehicles"
           onChange={(e) => handleChange(e)}
         />
@@ -77,6 +85,7 @@ export default function Home() {
               <th>Año</th>
               <th>color</th>
               <th>placa</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
@@ -89,6 +98,7 @@ export default function Home() {
                   <td>{vehicle.year}</td>
                   <td>{vehicle.color}</td>
                   <td>{vehicle.plate}</td>
+                  <td><Button type="button" variant="danger" onClick={() => handleDelete(vehicle._id)} >X</Button></td>
                 </tr>
               )))
             }
